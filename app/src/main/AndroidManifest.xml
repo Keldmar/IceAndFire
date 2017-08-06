@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="yahnenko.ua.iceandfire">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <application
+        android:name=".IceAndFireApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:name=".IceAndFireApplication"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -17,6 +18,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".CharactersActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity android:name=".CharacterInformationActivity" />
+        <activity
+            android:name=".BooksActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity android:name=".BooksInformationActivity" />
+        <activity
+            android:name=".HousesActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity android:name=".HouseInformationActivity"/>
     </application>
 
 </manifest>

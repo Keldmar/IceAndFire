@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">IceAndFire</string>
+
+    <string-array name="gender_filter">
+        <item>All</item>
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
 </resources>

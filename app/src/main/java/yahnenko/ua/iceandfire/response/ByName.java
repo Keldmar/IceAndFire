@@ -1,12 +1,13 @@
 package yahnenko.ua.iceandfire.response;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Dront on 21.07.2017.
  */
 
-public class FoTheName {
+public class ByName implements Serializable {
     public String url;
     public String name;
     public String gender;
