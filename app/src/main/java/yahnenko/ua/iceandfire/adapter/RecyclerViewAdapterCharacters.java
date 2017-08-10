@@ -40,14 +40,17 @@ public class RecyclerViewAdapterCharacters extends RecyclerView.Adapter<ViewHold
      */
     @Override
     public void onBindViewHolder(ViewHolderName viewHolder, final int i) {
-        viewHolder.setView(listedsName.get(i));
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ByName byName = listedsName.get(i);
-                itemClackCallback.onPersonClick(byName);
-            }
-        });
+        if (listedsName.get(i).name.equals("")) {
+
+        }
+            viewHolder.setView(listedsName.get(i));
+            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ByName byName = listedsName.get(i);
+                    itemClackCallback.onPersonClick(byName);
+                }
+            });
     }
 
 //    private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {

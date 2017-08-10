@@ -35,6 +35,7 @@ public class BooksInformationActivity extends AppCompatActivity{
             }
         });
 
+
         informBooks = (TextView) findViewById(R.id.info_books);
 
         final Intent intent = getIntent();

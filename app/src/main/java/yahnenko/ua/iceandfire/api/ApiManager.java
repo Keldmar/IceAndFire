@@ -22,7 +22,7 @@ import yahnenko.ua.iceandfire.response.ByHouses;
 import yahnenko.ua.iceandfire.response.ByName;
 
 public class ApiManager {
-    public static final String NAMES_ON_THR_PAGE = "20";
+    public static final String NAMES_ON_THR_PAGE = "30";
     private final String URL = "https://anapioficeandfire.com/api/";
 
     private IceAndFireAPI service;

@@ -38,7 +38,7 @@ public class HouseInformationActivity extends AppCompatActivity{
         house_info = (TextView) findViewById(R.id.houses_info);
 
         final Intent intent = getIntent();
-        IceAndFireApplication.getApiManager().getByHouses((HashMap<String, String>)intent.getSerializableExtra("key")).enqueue(new Callback<List<ByHouses>>() {
+        IceAndFireApplication.getApiManager().getByHouses((HashMap<String, String>) intent.getSerializableExtra("key")).enqueue(new Callback<List<ByHouses>>() {
             @Override
             public void onResponse(Call<List<ByHouses>> call, Response<List<ByHouses>> response) {
                 List<ByHouses> byHouses = response.body();

@@ -27,6 +27,12 @@ import yahnenko.ua.iceandfire.response.ByName;
 
 public class CharactersActivity extends AppCompatActivity implements ItemClickCallbackCharacters {
     private EditText searchByName;
+    private String saveFieldSpinnerIsAlive;
+    private String saveFieldSpinnerName;
+
+    final RecyclerViewAdapterCharacters recyclerViewAdapterCharacters = new RecyclerViewAdapterCharacters(CharactersActivity.this);
+
+    final HashMap<String, String> queriesName = new HashMap<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,16 +49,26 @@ public class CharactersActivity extends AppCompatActivity implements ItemClickCa
             }
         });
 
-        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv);
-
-        final HashMap<String, String> queries = new HashMap<>();
-
         final Spinner spinnerGenderFilters = (Spinner) findViewById(R.id.spinner_gender_filters);
+        final Spinner spinnerIsAliveFilters = (Spinner) findViewById(R.id.spinner_isAlive_filters);
+
+        spinnerIsAliveFilters.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                saveFieldSpinnerIsAlive = spinnerIsAliveFilters.getSelectedItem().toString();
+                setInformQueries();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         spinnerGenderFilters.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selected = spinnerGenderFilters.getSelectedItem().toString();
-                queries.put("gender",selected);
+                saveFieldSpinnerName = spinnerGenderFilters.getSelectedItem().toString();
+                setInformQueries();
             }
 
             @Override
@@ -61,13 +77,36 @@ public class CharactersActivity extends AppCompatActivity implements ItemClickCa
             }
         });
 
-//        queries.put("gender", "all ");
-        final RecyclerViewAdapterCharacters recyclerViewAdapterCharacters = new RecyclerViewAdapterCharacters(CharactersActivity.this);
-        IceAndFireApplication.getApiManager().getByName(queries).enqueue(new Callback<List<ByName>>() {
+
+        searchByName = (EditText) findViewById(R.id.search);
+        searchByName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    HashMap<String, String> searchName = new HashMap<>();
+                    searchName.put("name", searchByName.getText().toString());
+                    Intent intent = new Intent(CharactersActivity.this, CharacterInformationActivity.class);
+                    intent.putExtra("key", searchName);
+                    startActivity(intent);
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    private void setInformQueries() {
+
+        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv);
+        queriesName.put("gender", saveFieldSpinnerName);
+        queriesName.put("isAlive", saveFieldSpinnerIsAlive);
+
+        IceAndFireApplication.getApiManager().getByName(queriesName).enqueue(new Callback<List<ByName>>() {
             @Override
             public void onResponse(Call<List<ByName>> call, Response<List<ByName>> response) {
                 List<ByName> byName = response.body();
-                recyclerViewAdapterCharacters.addView(byName);
+
+                recyclerViewAdapterCharacters.addView(clippingOfEmpty(byName));
                 recyclerView.setAdapter(recyclerViewAdapterCharacters);
                 //                Log.d("TAG", "onResponse: ");
             }
@@ -77,22 +116,33 @@ public class CharactersActivity extends AppCompatActivity implements ItemClickCa
                 Log.d("TAG", "onFailure: ");
             }
         });
-        searchByName = (EditText) findViewById(R.id.search);
-        searchByName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    String name = searchByName.getText().toString();
-                    HashMap<String, String> searchName = new HashMap<>();
-                    searchName.put("name", name);
-                    Intent intent = new Intent(CharactersActivity.this, CharacterInformationActivity.class);
-                    intent.putExtra("key", searchName);
-                    startActivity(intent);
-                    return true;
-                }
-                return false;
+    }
+
+    private List<ByName> clippingOfEmpty(List<ByName> byName) {
+        for (int i = 0; i < byName.size(); i++) {
+            if (byName.get(i).name.isEmpty()){
+                byName.remove(i);
+                i--;
             }
-        });
+        }
+////        for (ByName characters : byName) {
+////            if (characters.name.isEmpty()){
+////                byName.remove(characters);
+////            }
+////        }
+////
+////
+//        Stream.of(byName)
+//            .filterNot(byName::isEmpty);
+////
+//////        Iterator it = byName.iterator();
+//////        while (it.hasNext())
+//////        {
+//////
+//////            ByName item = (ByName) it.next();
+//////            it.remove(item);
+//////        }
+        return byName;
     }
 
     @Override

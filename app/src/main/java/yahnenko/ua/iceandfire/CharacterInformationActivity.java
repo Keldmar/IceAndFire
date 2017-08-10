@@ -18,9 +18,9 @@ import retrofit2.Response;
 import yahnenko.ua.iceandfire.response.ByName;
 
 
-
 public class CharacterInformationActivity extends AppCompatActivity {
     private TextView info;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +29,7 @@ public class CharacterInformationActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -39,11 +40,12 @@ public class CharacterInformationActivity extends AppCompatActivity {
         info = (TextView) findViewById(R.id.info);
 
         final Intent intent = getIntent();
-        IceAndFireApplication.getApiManager().getByName((HashMap<String, String>)intent.getSerializableExtra("key")).enqueue(new Callback<List<ByName>>() {
+        IceAndFireApplication.getApiManager().getByName((HashMap<String, String>) intent.getSerializableExtra("key")).enqueue(new Callback<List<ByName>>() {
             @Override
             public void onResponse(Call<List<ByName>> call, Response<List<ByName>> response) {
                 List<ByName> byName = response.body();
-                info.setText(byName.get(0).name + "\nculture:" +byName.get(0).culture + "\ntitles:" +byName.get(0).titles);
+                info.setText("culture: " + byName.get(0).culture + "\nborn: " +byName.get(0).born + "\ntitles: " +byName.get(0).titles + "\naliases: " +byName.get(0).aliases + "\ntvSeries: " +byName.get(0).tvSeries + "\nplayed By: " +byName.get(0).playedBy);
+                getSupportActionBar().setTitle(byName.get(0).name);
                 //                Log.d("TAG", "onResponse: ");
             }
 
@@ -55,7 +57,9 @@ public class CharacterInformationActivity extends AppCompatActivity {
 
         ByName byName = (ByName) getIntent().getSerializableExtra("obj");
         if (byName != null) {
-            info.setText(byName.name + "\nculture:" +byName.culture + "\ntitles:" +byName.titles);
+            info.setText("culture: " +byName.culture + "\nborn: " +byName.born + "\ntitles: " +byName.titles + "\naliases: " +byName.aliases + "\ntvSeries: " +byName.tvSeries + "\nplayed By: " +byName.playedBy);
+//            info.setText(getString(R.string.information_person, byName.culture, byName.born));
+            getSupportActionBar().setTitle(byName.name);
         }
     }
 
