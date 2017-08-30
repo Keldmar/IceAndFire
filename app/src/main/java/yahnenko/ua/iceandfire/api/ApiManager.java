@@ -22,7 +22,7 @@ import yahnenko.ua.iceandfire.response.ByHouses;
 import yahnenko.ua.iceandfire.response.ByName;
 
 public class ApiManager {
-    public static final String NAMES_ON_THR_PAGE = "30";
+    public static final String NAMES_ON_THE_PAGE = "30";
     private final String URL = "https://anapioficeandfire.com/api/";
 
     private IceAndFireAPI service;
@@ -38,7 +38,7 @@ public class ApiManager {
                 Request original = chain.request();
                 HttpUrl originalHttUrl = original.url();
                 HttpUrl url = originalHttUrl.newBuilder()
-                        .addQueryParameter("pageSize", NAMES_ON_THR_PAGE)
+                        .addQueryParameter("pageSize", NAMES_ON_THE_PAGE)
                         .build();
                 Request.Builder requestBuilder = original.newBuilder()
                         .url(url);

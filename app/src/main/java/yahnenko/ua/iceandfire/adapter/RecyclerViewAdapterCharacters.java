@@ -6,10 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import yahnenko.ua.iceandfire.interfaceForclick.ItemClickCallbackCharacters;
 import yahnenko.ua.iceandfire.R;
+import yahnenko.ua.iceandfire.interfaceForclick.ItemClickCallbackCharacters;
 import yahnenko.ua.iceandfire.response.ByName;
 
 public class RecyclerViewAdapterCharacters extends RecyclerView.Adapter<ViewHolderName> {
@@ -17,11 +18,21 @@ public class RecyclerViewAdapterCharacters extends RecyclerView.Adapter<ViewHold
     private final ItemClickCallbackCharacters itemClackCallback;
 
     public RecyclerViewAdapterCharacters(ItemClickCallbackCharacters itemClackCallback) {
-
+        this.listedsName = new ArrayList<>();
         this.itemClackCallback = itemClackCallback;
     }
 
     public void addView(List<ByName> listedsName) {
+        int listsize = this.listedsName.size() - 1;
+        for (ByName byname : listedsName) {
+            this.listedsName.add(byname);
+            notifyItemInserted(listsize);
+        }
+//        this.listedsName.addAll(listedsName);
+//        notifyItemRangeInserted(listsize, this.listedsName.size() - 1);
+    }
+
+    public void addViewAfterFilters(List<ByName> listedsName) {
         this.listedsName = listedsName;
         notifyDataSetChanged();
     }
@@ -43,42 +54,19 @@ public class RecyclerViewAdapterCharacters extends RecyclerView.Adapter<ViewHold
         if (listedsName.get(i).name.equals("")) {
 
         }
-            viewHolder.setView(listedsName.get(i));
-            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ByName byName = listedsName.get(i);
-                    itemClackCallback.onPersonClick(byName);
-                }
-            });
+        viewHolder.setView(listedsName.get(i));
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ByName byName = listedsName.get(i);
+                itemClackCallback.onPersonClick(byName);
+            }
+        });
     }
-
-//    private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
-//        @Override
-//        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-//            super.onScrollStateChanged(recyclerView, newState);
-//        }
-//
-//        @Override
-//        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-//            super.onScrolled(recyclerView, dx, dy);
-//            int visibleItemCount = layoutManager.getChildCount();
-//            int totalItemCount = layoutManager.getItemCount();
-//            int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
-//
-//            if (!isLoading && !isLastPage) {
-//                if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
-//                        && firstVisibleItemPosition >= 0
-//                        && totalItemCount >= PAGE_SIZE) {
-//                    loadMoreItems();
-//                }
-//            }
-//        }
-//    };
 
     @Override
     public int getItemCount() {
         return listedsName.size();
     }
-    
+
 }

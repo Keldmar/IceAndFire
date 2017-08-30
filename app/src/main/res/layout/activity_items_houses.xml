@@ -23,7 +23,6 @@
         android:id="@+id/search_houses"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
         android:hint="Search by houses"
         android:imeOptions="actionSearch"
         android:inputType="text" />

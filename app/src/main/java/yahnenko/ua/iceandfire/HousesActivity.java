@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -27,9 +28,11 @@ import yahnenko.ua.iceandfire.response.ByHouses;
 
 
 public class HousesActivity extends AppCompatActivity implements ItemClickCallbackHouses {
+    private Integer nextPage = 1;
     private EditText searchByHouses;
     private String saveFieldSpinnerExtinct;
     private String saveFieldspinnerAncestralWeapons;
+    private RecyclerView recyclerView;
     final RecyclerViewAdapterHouses recyclerViewAdapterHouses = new RecyclerViewAdapterHouses(this);
     final HashMap<String, String> queriesHouses = new HashMap<>();
 
@@ -37,7 +40,8 @@ public class HousesActivity extends AppCompatActivity implements ItemClickCallba
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_items_houses);
-
+        recyclerView = (RecyclerView) findViewById(R.id.rv);
+        recyclerView.setAdapter(recyclerViewAdapterHouses);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -95,16 +99,40 @@ public class HousesActivity extends AppCompatActivity implements ItemClickCallba
         });
     }
 
+    boolean wasPaging;
+
     private void setInformQueries() {
-        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv);
+
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0) {
+                    android.support.v7.widget.LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                    if (recyclerView.getAdapter().getItemCount() - 1 == linearLayoutManager.findLastVisibleItemPosition()) {
+                        nextPage++;
+                        queriesHouses.put("page", String.valueOf(nextPage));
+                        wasPaging = true;
+                        setInformQueries();
+                    } else {
+                        wasPaging = false;
+                    }
+                }
+            }
+        });
+
         queriesHouses.put("hasAncestralWeapons", saveFieldspinnerAncestralWeapons);
         queriesHouses.put("hasDiedOut", saveFieldSpinnerExtinct);
         IceAndFireApplication.getApiManager().getByHouses(queriesHouses).enqueue(new Callback<List<ByHouses>>() {
             @Override
             public void onResponse(Call<List<ByHouses>> call, Response<List<ByHouses>> response) {
                 List<ByHouses> byHouses = response.body();
-                recyclerViewAdapterHouses.addView(byHouses);
-                recyclerView.setAdapter(recyclerViewAdapterHouses);
+                if (wasPaging) {
+                    recyclerViewAdapterHouses.addView(byHouses);
+                } else {
+                    recyclerViewAdapterHouses.addViewAfterFilters(byHouses);
+                }
+
+
                 //                Log.d("TAG", "onResponse: ");
             }
 

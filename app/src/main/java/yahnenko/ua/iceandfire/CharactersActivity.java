@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -26,10 +27,11 @@ import yahnenko.ua.iceandfire.interfaceForclick.ItemClickCallbackCharacters;
 import yahnenko.ua.iceandfire.response.ByName;
 
 public class CharactersActivity extends AppCompatActivity implements ItemClickCallbackCharacters {
+    private Integer nextPage = 1;
     private EditText searchByName;
     private String saveFieldSpinnerIsAlive;
     private String saveFieldSpinnerName;
-
+    private RecyclerView recyclerView;
     final RecyclerViewAdapterCharacters recyclerViewAdapterCharacters = new RecyclerViewAdapterCharacters(CharactersActivity.this);
 
     final HashMap<String, String> queriesName = new HashMap<>();
@@ -38,6 +40,9 @@ public class CharactersActivity extends AppCompatActivity implements ItemClickCa
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_items_characters);
+
+        recyclerView = (RecyclerView) findViewById(R.id.rv);
+        recyclerView.setAdapter(recyclerViewAdapterCharacters);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -95,9 +100,27 @@ public class CharactersActivity extends AppCompatActivity implements ItemClickCa
         });
     }
 
+    boolean wasPaging;
+
     private void setInformQueries() {
 
-        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv);
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (dy > 0) {
+                    android.support.v7.widget.LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                    if (recyclerView.getAdapter().getItemCount() - 1 == linearLayoutManager.findLastVisibleItemPosition()) {
+                        nextPage++;
+                        queriesName.put("page", String.valueOf(nextPage));
+                        wasPaging = true;
+                        setInformQueries();
+                    } else {
+                        wasPaging = false;
+                    }
+                }
+            }
+        });
+
         queriesName.put("gender", saveFieldSpinnerName);
         queriesName.put("isAlive", saveFieldSpinnerIsAlive);
 
@@ -105,9 +128,11 @@ public class CharactersActivity extends AppCompatActivity implements ItemClickCa
             @Override
             public void onResponse(Call<List<ByName>> call, Response<List<ByName>> response) {
                 List<ByName> byName = response.body();
-
-                recyclerViewAdapterCharacters.addView(clippingOfEmpty(byName));
-                recyclerView.setAdapter(recyclerViewAdapterCharacters);
+                if (wasPaging) {
+                    recyclerViewAdapterCharacters.addView(clippingOfEmpty(byName));
+                } else {
+                    recyclerViewAdapterCharacters.addViewAfterFilters(clippingOfEmpty(byName));
+                }
                 //                Log.d("TAG", "onResponse: ");
             }
 
@@ -120,28 +145,11 @@ public class CharactersActivity extends AppCompatActivity implements ItemClickCa
 
     private List<ByName> clippingOfEmpty(List<ByName> byName) {
         for (int i = 0; i < byName.size(); i++) {
-            if (byName.get(i).name.isEmpty()){
+            if (byName.get(i).name.isEmpty()) {
                 byName.remove(i);
                 i--;
             }
         }
-////        for (ByName characters : byName) {
-////            if (characters.name.isEmpty()){
-////                byName.remove(characters);
-////            }
-////        }
-////
-////
-//        Stream.of(byName)
-//            .filterNot(byName::isEmpty);
-////
-//////        Iterator it = byName.iterator();
-//////        while (it.hasNext())
-//////        {
-//////
-//////            ByName item = (ByName) it.next();
-//////            it.remove(item);
-//////        }
         return byName;
     }
 

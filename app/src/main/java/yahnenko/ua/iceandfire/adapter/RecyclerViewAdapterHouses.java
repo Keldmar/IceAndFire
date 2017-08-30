@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import yahnenko.ua.iceandfire.R;
@@ -17,10 +18,19 @@ public class RecyclerViewAdapterHouses extends RecyclerView.Adapter<ViewHolderHo
     private final ItemClickCallbackHouses itemClickCallbackHouses;
 
     public RecyclerViewAdapterHouses(ItemClickCallbackHouses itemClickCallbackHouses) {
+        this.listedsHouses = new ArrayList<>();
         this.itemClickCallbackHouses = itemClickCallbackHouses;
     }
 
     public void addView(List<ByHouses> listedsHouses) {
+        int listsize = this.listedsHouses.size() - 1;
+        for (ByHouses byHouses : listedsHouses) {
+            this.listedsHouses.add(byHouses);
+            notifyItemInserted(listsize);
+        }
+    }
+
+    public void addViewAfterFilters(List<ByHouses> listedsHouses) {
         this.listedsHouses = listedsHouses;
         notifyDataSetChanged();
     }
